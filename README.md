@@ -4,7 +4,6 @@
 <p align="center">
  <a href="#tech">Tecnologias</a> • 
  <a href="#started">Iniciar</a> • 
- <a href="#routes">Endpoints</a> •
  <a href="#colab">Colaboradores</a> •
  <a href="#contribute">Contribuir</a>
 </p>
