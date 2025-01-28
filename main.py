@@ -1,7 +1,9 @@
-import pygame, random, time
+from fastapi import background
+import pygame, random
 import sys
 from pygame.locals import K_SPACE, KEYDOWN, QUIT, K_UP
 from src.menu import show_menu
+from src.pontuacao import Pontuacao
 
 pygame.init()
 
@@ -17,7 +19,6 @@ PIPE_GAP = 200
 GROUND_WIDTH = 2 * SCREEN_WIDTH
 GROUND_HEIGHT = 100
 
-
 # Função para verificar carregamento de imagens
 def load_image(path, scale=None):
     try:
@@ -25,6 +26,7 @@ def load_image(path, scale=None):
         if scale:
             image = pygame.transform.scale(image, scale)
         return image
+    
     except pygame.error:
         print(f"Erro ao carregar imagem: {path}")
         sys.exit()
@@ -67,6 +69,7 @@ class Pipe(pygame.sprite.Sprite):
     def __init__(self, inverted, xpos, ysize):
         super().__init__()
         self.image = load_image('./src/img/pipe.png', (PIPE_WIDTH, PIPE_HEIGHT))
+        
         if inverted:
             self.image = pygame.transform.flip(self.image, False, True)
             self.rect = self.image.get_rect(topleft=(xpos, - (self.image.get_height() - ysize)))
@@ -97,6 +100,7 @@ def get_random_pipes(xpos):
     pipe_inverted = Pipe(True, xpos, SCREEN_HEIGHT - size - PIPE_GAP)
     return pipe, pipe_inverted
 
+# Tela Menu
 def game_loop():
     
     # Inicialização
@@ -108,9 +112,13 @@ def game_loop():
     
     bird_group = pygame.sprite.GroupSingle(Bird())
     ground_group = pygame.sprite.Group(Ground(0), Ground(GROUND_WIDTH))
-    pipe_group = pygame.sprite.Group(get_random_pipes(SCREEN_WIDTH + i * 400)[j]
-                                      for i in range(2) for j in range(2))
+    pipe_group = pygame.sprite.Group(
+        get_random_pipes(SCREEN_WIDTH + i * 400)[j]
+        for i in range(2) for j in range(2))
 
+    # Inicializando a pontuação
+    pontuacao = Pontuacao('./src/fonts/Bangers-Regular.ttf', 50, SCREEN_WIDTH, SCREEN_HEIGHT)
+    
     running = True
     game_active = True
     
@@ -119,6 +127,8 @@ def game_loop():
     # Loop principal
     while running:
         screen.blit(background, (0, 0))
+        
+        # Verificando eventos
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -127,7 +137,8 @@ def game_loop():
                 bird_group.sprite.bump()
     
         if game_active:
-        # Atualizações
+            
+            # Atualizações
             bird_group.update()
             ground_group.update()
             pipe_group.update()
@@ -138,6 +149,7 @@ def game_loop():
             if is_off_screen(pipe_group.sprites()[0]):
                 pipe_group.remove(pipe_group.sprites()[:2])
                 pipe_group.add(*get_random_pipes(SCREEN_WIDTH * 2))
+                pontuacao.increment() # incrementar a pontuação
 
             # Verificar colisões
             if (pygame.sprite.groupcollide(bird_group, ground_group, False, False, pygame.sprite.collide_mask) or
@@ -148,6 +160,7 @@ def game_loop():
         bird_group.draw(screen)
         pipe_group.draw(screen)
         ground_group.draw(screen)
+        pontuacao.draw(screen)
         
         font = pygame.font.Font('./src/fonts/Bangers-Regular.ttf', 50) #Tamanho e tipo de fonte
         
@@ -170,7 +183,7 @@ def game_loop():
             screen.blit(game_over_shadow, shadow_position)
             screen.blit(game_over_text, text_position)
 
-        pygame.display.update()
+        pygame.display.flip()
         clock.tick(30)
 
 # Executando o jogo
