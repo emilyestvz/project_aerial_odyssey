@@ -31,7 +31,7 @@ def load_image(path, scale=None):
         print(f"Erro ao carregar imagem: {path}")
         sys.exit()
 
-# Classes
+# Classes Principais
 class Bird(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -165,21 +165,21 @@ def game_loop():
         font = pygame.font.Font('./src/fonts/Bangers-Regular.ttf', 50) #Tamanho e tipo de fonte
         
         if not game_active:
-            # Mostrando a mensagem "Game Over"
+            # Mensagem "Game Over"
             text_color = (255, 255, 255)  # branco
             shadow_color = (0, 0, 0)      # preto
 
-            # Crie um efeito de sombra para o texto
+            # Efeito de sombra para o texto
             game_over_shadow = font.render("Game Over", True, shadow_color)
             game_over_text = font.render("Game Over", True, text_color)
 
-            # Posicione a sombra levemente deslocada
+            # Sombra levemente deslocada
             shadow_position = (SCREEN_WIDTH // 2 - game_over_shadow.get_width() // 2 + 2,
                             SCREEN_HEIGHT // 2 - game_over_shadow.get_height() // 2 + 2)
             text_position = (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2,
                             SCREEN_HEIGHT // 2 - game_over_text.get_height() // 2)
 
-            # Desenhe a sombra e o texto principal
+            # Sombra e o texto principal
             screen.blit(game_over_shadow, shadow_position)
             screen.blit(game_over_text, text_position)
 

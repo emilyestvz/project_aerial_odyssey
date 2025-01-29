@@ -8,7 +8,7 @@ class Pontuacao:
         self.screen_height = screen_height
         
     def reset(self):
-        #Reseta a pontuação para 0.
+        # Reseta a pontuação para 0.
         self.score = 0
         
     def increment(self):
