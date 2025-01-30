@@ -88,7 +88,12 @@ class Ground(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
-        self.rect.x -= GAME_SPEED
+        self.rect.x -= GAME_SPEED # move a base p a esquerda
+        
+        # Verifica se a base saiu completamente da tela
+        if self.rect.right < 0:
+            # Reposiciona a base à direita da tela
+            self.rect.x = SCREEN_WIDTH
 
 # Funções auxiliares
 def is_off_screen(sprite):
@@ -117,7 +122,7 @@ def game_loop():
         for i in range(2) for j in range(2))
 
     # Inicializando a pontuação
-    pontuacao = Pontuacao('./src/fonts/Bangers-Regular.ttf', 50, SCREEN_WIDTH, SCREEN_HEIGHT)
+    pontuacao = Pontuacao('./src/fonts/Bangers-Regular.ttf', 25, SCREEN_WIDTH, SCREEN_HEIGHT)
     
     running = True
     game_active = True
