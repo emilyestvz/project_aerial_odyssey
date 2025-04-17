@@ -1,10 +1,8 @@
-from fastapi import background
 import pygame, random
 import sys
 from pygame.locals import K_SPACE, KEYDOWN, QUIT, K_UP
 from src.menu import show_menu
 from src.pontuacao import Pontuacao
-
 pygame.init()
 
 # Configurações
