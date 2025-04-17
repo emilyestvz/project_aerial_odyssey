@@ -139,7 +139,22 @@ def game_loop():
                 pygame.quit()
                 sys.exit()
             if event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_UP):
-                bird_group.sprite.bump()
+                if game_active:
+                    bird_group.sprite.bump()
+
+            # Clique no botão de reiniciar
+            if not game_active and event.type == pygame.MOUSEBUTTONDOWN:
+                if restart_button.collidepoint(event.pos):
+                    # Reiniciar o jogo
+                    bird_group = pygame.sprite.GroupSingle(Bird())
+                    ground_group = pygame.sprite.Group(Ground(0), Ground(GROUND_WIDTH))
+                    pipe_group = pygame.sprite.Group(
+                        get_random_pipes(SCREEN_WIDTH + i * 400)[j]
+                        for i in range(2) for j in range(2)
+                    )
+                    pontuacao.reset()
+                    game_active = True
+
     
         if game_active:
             
@@ -161,7 +176,7 @@ def game_loop():
                     pygame.sprite.groupcollide(bird_group, pipe_group, False, False, pygame.sprite.collide_mask)):
                 game_active = False  # o jogador perdeu
 
-        # Desenho
+        # Configurações de estilo
         bird_group.draw(screen)
         pipe_group.draw(screen)
         ground_group.draw(screen)
@@ -170,23 +185,48 @@ def game_loop():
         font = pygame.font.Font('./src/fonts/Bangers-Regular.ttf', 50) #Tamanho e tipo de fonte
         
         if not game_active:
-            # Mensagem "Game Over"
+            # Cores
             text_color = (255, 255, 255)  # branco
-            shadow_color = (0, 0, 0)      # preto
+            text_color_button = (0, 0, 0) # preto
+            shadow_color = (0, 0, 0)      
+            shadow_color_button = (0,0,0)
+            button_color = (255, 255, 255)
 
-            # Efeito de sombra para o texto
+            # Fontes
+            font = pygame.font.Font('./src/fonts/Bangers-Regular.ttf', 50)
+            restart_font = pygame.font.Font('./src/fonts/Bangers-Regular.ttf', 30)
+
+            # Game Over - Sombra e Texto
             game_over_shadow = font.render("Game Over", True, shadow_color)
             game_over_text = font.render("Game Over", True, text_color)
 
-            # Sombra levemente deslocada
             shadow_position = (SCREEN_WIDTH // 2 - game_over_shadow.get_width() // 2 + 2,
                             SCREEN_HEIGHT // 2 - game_over_shadow.get_height() // 2 + 2)
             text_position = (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2,
                             SCREEN_HEIGHT // 2 - game_over_text.get_height() // 2)
 
-            # Sombra e o texto principal
             screen.blit(game_over_shadow, shadow_position)
             screen.blit(game_over_text, text_position)
+
+            # Botão de Restart
+            restart_button = pygame.Rect(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT // 2 + 50, 150, 50)
+
+            #Desenha a sombra do botão
+            shadow_offset = 4
+            shadow_rect = restart_button.move(shadow_offset, shadow_offset)
+            pygame.draw.rect(screen, shadow_color_button, shadow_rect, border_radius=12)
+
+            # Desenha o botão principal por cima
+            pygame.draw.rect(screen, button_color, restart_button, border_radius=12)
+
+            # Texto do botão por cima do botão
+            restart_text = restart_font.render("Restart", True, text_color_button)
+            screen.blit(restart_text, (
+                restart_button.x + (restart_button.width - restart_text.get_width()) // 2,
+                restart_button.y + (restart_button.height - restart_text.get_height()) // 2
+            ))
+
+
 
         pygame.display.flip()
         clock.tick(30)
